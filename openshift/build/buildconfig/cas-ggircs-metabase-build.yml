@@ -1,0 +1,42 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+
+parameters:
+- description: Prefix to prepend to object name.
+  displayName: Prefix
+  name: PREFIX
+  required: true
+- description: SHA1 of git revision to be deployed.
+  displayName: Git SHA1
+  name: GIT_SHA1
+  required: true
+
+objects:
+- apiVersion: build.openshift.io/v1
+  kind: BuildConfig
+  metadata:
+    name: ${PREFIX}metabase-build
+  spec:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: ${PREFIX}metabase-build:${GIT_SHA1}
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 4Gi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+    source:
+      git:
+        ref: bcgov
+        uri: https://github.com/bcgov/${PREFIX}metabase.git
+    strategy:
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          name: ${PREFIX}metabase-builder:${GIT_SHA1}
+        incremental: true
+      type: Source
+    triggers: []

@@ -1,0 +1,48 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+
+parameters:
+- description: Prefix to prepend to object name.
+  displayName: Prefix
+  name: PREFIX
+  required: true
+- description: SHA1 of git revision to be deployed.
+  displayName: Git SHA1
+  name: GIT_SHA1
+  required: true
+- description: Git tag of the metabase version
+  displayName: Metabase version
+  name: METABASE_VERSION
+  required: true
+
+objects:
+- apiVersion: build.openshift.io/v1
+  kind: BuildConfig
+  metadata:
+    name: cas-ggircs-metabase-preview-build
+  spec:
+    output:
+      to:
+        kind: ImageStreamTag
+        name: cas-ggircs-metabase-build:${METABASE_VERSION}
+    resources:
+      limits:
+        cpu: "4"
+        memory: 8Gi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+    source:
+      git:
+        ref: ${METABASE_VERSION}
+        uri: https://github.com/metabase/metabase.git
+    strategy:
+      sourceStrategy:
+        from:
+          kind: ImageStreamTag
+          name: cas-ggircs-metabase-builder:${GIT_BRANCH_NORM}
+        incremental: true
+      type: Source
+    triggers:
+    - type: ImageChange
+      imageChange: {}
