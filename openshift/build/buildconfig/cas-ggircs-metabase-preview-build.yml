@@ -21,6 +21,8 @@ objects:
   metadata:
     name: cas-ggircs-metabase-preview-build
   spec:
+    nodeSelector:
+        beta.kubernetes.io/os: linux
     output:
       to:
         kind: ImageStreamTag
@@ -36,6 +38,7 @@ objects:
       git:
         ref: ${METABASE_VERSION}
         uri: https://github.com/metabase/metabase.git
+      type: Git
     strategy:
       sourceStrategy:
         from:
@@ -43,6 +46,6 @@ objects:
           name: cas-ggircs-metabase-builder:${GIT_BRANCH_NORM}
         incremental: true
       type: Source
-    triggers:
-    - type: ImageChange
-      imageChange: {}
+    triggers: []
+  status:
+    lastVersion: 0

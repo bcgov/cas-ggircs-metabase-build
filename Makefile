@@ -5,6 +5,8 @@ PROJECT_PREFIX := cas-ggircs-
 THIS_FILE := $(lastword $(MAKEFILE_LIST))
 include .pipeline/*.mk
 
+OC_TEMPLATE_VARS += METABASE_VERSION=v0.33.0-RC1 METABASE_BRANCH=bcgov
+
 .PHONY: help
 help: $(call make_help,help,Explains how to use this Makefile)
 	@@exit 0
