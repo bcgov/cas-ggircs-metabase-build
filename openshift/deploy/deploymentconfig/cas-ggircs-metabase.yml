@@ -2,54 +2,59 @@ apiVersion: template.openshift.io/v1
 kind: Template
 labels:
   template: deploy-template
-objects:
 
+parameters:
+- description: Prefix to prepend to object name.
+  displayName: Prefix
+  name: PREFIX
+  required: true
+
+objects:
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
     annotations:
       template.alpha.openshift.io/wait-for-ready: "true"
-    name: cas-ggircs-metabase
+    name: ${PREFIX}metabase
   spec:
     replicas: 2
     selector:
-      name: cas-ggircs-metabase
+      name: ${PREFIX}metabase
     strategy:
       type: Rolling
     template:
       metadata:
         labels:
-          name: cas-ggircs-metabase
+          name: ${PREFIX}metabase
       spec:
         containers:
-        - capabilities: {}
-          env:
+        - env:
           - name: MB_DB_USER
             valueFrom:
               secretKeyRef:
                 key: database-user
-                name: cas-ggircs-metabase-postgres
+                name: ${PREFIX}metabase-postgres
           - name: MB_DB_PASS
             valueFrom:
               secretKeyRef:
                 key: database-password
-                name: cas-ggircs-metabase-postgres
+                name: ${PREFIX}metabase-postgres
           - name: MB_DB_DBNAME
             valueFrom:
               secretKeyRef:
                 key: database-name
-                name: cas-ggircs-metabase-postgres
+                name: ${PREFIX}metabase-postgres
           - name: MB_DB_TYPE
             value: postgres
           - name: MB_DB_PORT
             value: "5432"
           - name: MB_DB_HOST
-            value: cas-ggircs-metabase-postgres
+            value: ${PREFIX}metabase-postgres
           - name: JAVA_TIMEZONE
             value: US/Pacific
-          image: cas-ggircs-metabase-mirror:${GIT_BRANCH_NORM}
+          image: ${PREFIX}metabase
           imagePullPolicy: IfNotPresent
-          name: cas-ggircs-metabase
+          name: ${PREFIX}metabase
           ports:
           - containerPort: 3000
             protocol: TCP
@@ -75,21 +80,3 @@ objects:
           terminationMessagePath: /dev/termination-log
         dnsPolicy: ClusterFirst
         restartPolicy: Always
-    triggers:
-    - imageChangeParams:
-        automatic: true
-        containerNames:
-        - cas-ggircs-metabase
-        from:
-          kind: ImageStreamTag
-          name: cas-ggircs-metabase-mirror:${GIT_BRANCH_NORM}
-        lastTriggeredImage: ""
-      type: ImageChange
-    - type: ConfigChange
-  status: {}
-
-parameters:
-- description: Git source code branch currently deployed, where slashes are replaced by dashes, to be able to use it in image tags.
-  displayName: Git branch (normalized)
-  name: GIT_BRANCH_NORM
-  required: true

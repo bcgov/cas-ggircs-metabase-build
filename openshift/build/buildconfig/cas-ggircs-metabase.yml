@@ -22,7 +22,7 @@ objects:
     output:
       to:
         kind: ImageStreamTag
-        name: ${PREFIX}metabase:${GIT_BRANCH_NORM}
+        name: ${PREFIX}metabase:${GIT_SHA1}
     resources:
       limits:
         cpu: 1000m

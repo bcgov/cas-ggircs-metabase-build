@@ -17,6 +17,8 @@ objects:
   metadata:
     name: ${PREFIX}metabase-build
   spec:
+    nodeSelector:
+        beta.kubernetes.io/os: linux
     output:
       to:
         kind: ImageStreamTag
@@ -32,11 +34,14 @@ objects:
       git:
         ref: bcgov
         uri: https://github.com/bcgov/${PREFIX}metabase.git
+      type: Git
     strategy:
       sourceStrategy:
         from:
           kind: ImageStreamTag
-          name: ${PREFIX}metabase-builder:${GIT_SHA1}
+          name: ${PREFIX}metabase-builder:master
         incremental: true
       type: Source
     triggers: []
+  status:
+    lastVersion: 0

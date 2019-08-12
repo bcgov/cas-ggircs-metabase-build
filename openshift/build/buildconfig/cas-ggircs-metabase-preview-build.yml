@@ -43,7 +43,7 @@ objects:
       sourceStrategy:
         from:
           kind: ImageStreamTag
-          name: cas-ggircs-metabase-builder:${GIT_BRANCH_NORM}
+          name: cas-ggircs-metabase-builder:master
         incremental: true
       type: Source
     triggers: []

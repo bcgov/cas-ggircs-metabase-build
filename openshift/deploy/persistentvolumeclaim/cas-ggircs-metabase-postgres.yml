@@ -1,11 +1,22 @@
 apiVersion: template.openshift.io/v1
 kind: Template
-objects:
 
+parameters:
+- description: Prefix to prepend to object name.
+  displayName: Prefix
+  name: PREFIX
+  required: true
+- description: Volume space available for data, e.g. 512Mi, 2Gi.
+  displayName: Volume Capacity
+  name: VOLUME_CAPACITY
+  required: true
+  value: 20Gi
+
+objects:
 - apiVersion: v1
   kind: PersistentVolumeClaim
   metadata:
-    name: cas-ggircs-metabase-postgres
+    name: ${PREFIX}metabase-postgres
   spec:
     storageClassName: gluster-file-db
     accessModes:
@@ -14,9 +25,3 @@ objects:
       requests:
         storage: ${VOLUME_CAPACITY}
 
-parameters:
-- description: Volume space available for data, e.g. 512Mi, 2Gi.
-  displayName: Volume Capacity
-  name: VOLUME_CAPACITY
-  required: true
-  value: 20Gi

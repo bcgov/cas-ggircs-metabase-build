@@ -1,42 +1,47 @@
 apiVersion: template.openshift.io/v1
 kind: Template
-objects:
 
+parameters:
+- description: Prefix to prepend to object name.
+  displayName: Prefix
+  name: PREFIX
+  required: true
+
+objects:
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
     annotations:
       template.alpha.openshift.io/wait-for-ready: "true"
-    name: cas-ggircs-metabase-postgres
+    name: ${PREFIX}metabase-postgres
   spec:
     replicas: 1
     selector:
-      name: cas-ggircs-metabase-postgres
+      name: ${PREFIX}metabase-postgres
     strategy:
       type: Recreate
     template:
       metadata:
         labels:
-          name: cas-ggircs-metabase-postgres
+          name: ${PREFIX}metabase-postgres
       spec:
         containers:
-        - capabilities: {}
-          env:
+        - env:
           - name: POSTGRESQL_USER
             valueFrom:
               secretKeyRef:
                 key: database-user
-                name: cas-ggircs-metabase-postgres
+                name: ${PREFIX}metabase-postgres
           - name: POSTGRESQL_PASSWORD
             valueFrom:
               secretKeyRef:
                 key: database-password
-                name: cas-ggircs-metabase-postgres
+                name: ${PREFIX}metabase-postgres
           - name: POSTGRESQL_DATABASE
             valueFrom:
               secretKeyRef:
                 key: database-name
-                name: cas-ggircs-metabase-postgres
+                name: ${PREFIX}metabase-postgres
           - name: POSTGRESQL_MAX_CONNECTIONS
             value: '1000'
           - name: POSTGRESQL_MAX_PREPARED_TRANSACTIONS
@@ -45,7 +50,7 @@ objects:
             value: 2GB
           - name: POSTGRESQL_EFFECTIVE_CACHE_SIZE
             value: 8GB
-          image: cas-ggircs-postgres-mirror:${POSTGRES_VERSION}
+          image: ${PREFIX}postgres-mirror:${POSTGRES_VERSION}
           imagePullPolicy: IfNotPresent
           livenessProbe:
             exec:
@@ -54,7 +59,7 @@ objects:
               - --live
             initialDelaySeconds: 120
             timeoutSeconds: 10
-          name: cas-ggircs-metabase-postgres
+          name: ${PREFIX}metabase-postgres
           ports:
           - containerPort: 5432
             protocol: TCP
@@ -77,35 +82,15 @@ objects:
           terminationMessagePath: /dev/termination-log
           volumeMounts:
           - mountPath: /var/lib/pgsql/data
-            name: cas-ggircs-metabase-postgres
+            name: ${PREFIX}metabase-postgres
           - mountPath: /opt/app-root/src/data
-            name: cas-ggircs-data
+            name: ${PREFIX}data
         dnsPolicy: ClusterFirst
         restartPolicy: Always
         volumes:
-        - name: cas-ggircs-metabase-postgres
+        - name: ${PREFIX}metabase-postgres
           persistentVolumeClaim:
-            claimName: cas-ggircs-metabase-postgres
-        - name: cas-ggircs-data
+            claimName: ${PREFIX}metabase-postgres
+        - name: ${PREFIX}data
           persistentVolumeClaim:
-            claimName: cas-ggircs-data
-    triggers:
-    - imageChangeParams:
-        automatic: true
-        containerNames:
-        - cas-ggircs-metabase-postgres
-        from:
-          kind: ImageStreamTag
-          name: cas-ggircs-postgres-mirror:${POSTGRES_VERSION}
-        lastTriggeredImage: ""
-      type: ImageChange
-    - type: ConfigChange
-  status: {}
-
-parameters:
-- description: Version of PostgreSQL image to be used (10 for now).
-  displayName: Version of PostgreSQL Image
-  name: POSTGRES_VERSION
-  required: true
-  value: "latest"
-
+            claimName: ${PREFIX}data
