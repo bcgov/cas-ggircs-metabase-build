@@ -21,6 +21,7 @@ objects:
   metadata:
     name: cas-ggircs-metabase-preview-build
   spec:
+    runPolicy: Parallel
     nodeSelector:
         beta.kubernetes.io/os: linux
     output:

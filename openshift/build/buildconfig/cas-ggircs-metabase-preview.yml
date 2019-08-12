@@ -21,6 +21,7 @@ objects:
   metadata:
     name: ${PREFIX}metabase-preview
   spec:
+    runPolicy: Parallel
     nodeSelector:
       beta.kubernetes.io/os: linux
     output:
