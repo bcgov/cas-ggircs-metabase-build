@@ -85,10 +85,13 @@ jobs:
 workflows:
   test:
     jobs:
-      - lint
+      - lint:
+          context: cas-pipeline
       - build:
+          context: cas-pipeline
           requires:
             - lint
       - test-local-cluster:
+          context: cas-pipeline
           requires:
             - lint
