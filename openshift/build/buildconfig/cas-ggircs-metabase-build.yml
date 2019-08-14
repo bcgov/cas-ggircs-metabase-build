@@ -6,6 +6,10 @@ parameters:
   displayName: Prefix
   name: PREFIX
   required: true
+- description: Normalized name of git branch to be deployed.
+  displayName: Git branch (normalized)
+  name: GIT_BRANCH_NORM
+  required: true
 - description: SHA1 of git revision to be deployed.
   displayName: Git SHA1
   name: GIT_SHA1
@@ -16,6 +20,10 @@ objects:
   kind: BuildConfig
   metadata:
     name: ${PREFIX}metabase-build
+    labels:
+      git_sha1: ${GIT_SHA1}
+    # The git_sha1 label allows the pipeline find the image output for the current build
+    # Once this repository uses a submodule instead of having https://github.com/bcgov/${PREFIX}metabase.git, we can use the source commit instead
   spec:
     runPolicy: Parallel
     nodeSelector:
@@ -23,7 +31,8 @@ objects:
     output:
       to:
         kind: ImageStreamTag
-        name: ${PREFIX}metabase-build:${GIT_SHA1}
+        name: ${PREFIX}metabase-build:${GIT_BRANCH_NORM}
+        # The tag of the image stream is the branch instead of the sha1, to allow incremental builds
     resources:
       limits:
         cpu: 1000m
