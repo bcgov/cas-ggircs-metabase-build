@@ -20,10 +20,6 @@ objects:
   kind: BuildConfig
   metadata:
     name: ${PREFIX}metabase-build
-    labels:
-      git_sha1: ${GIT_SHA1}
-    # The git_sha1 label allows the pipeline find the image output for the current build
-    # Once this repository uses a submodule instead of having https://github.com/bcgov/${PREFIX}metabase.git, we can use the source commit instead
   spec:
     runPolicy: Parallel
     nodeSelector:
