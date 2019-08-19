@@ -8,6 +8,10 @@ parameters:
   displayName: Prefix
   name: PREFIX
   required: true
+- description: SHA1 of git revision to be deployed.
+  displayName: Git SHA1
+  name: GIT_SHA1
+  required: true
 
 objects:
 - apiVersion: v1
@@ -54,7 +58,7 @@ objects:
             value: US/Pacific
           image: ${PREFIX}metabase
           imagePullPolicy: IfNotPresent
-          name: ${PREFIX}metabase
+          name: ${PREFIX}metabase:${GIT_SHA1}
           ports:
           - containerPort: 3000
             protocol: TCP

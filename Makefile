@@ -46,3 +46,8 @@ build: whoami
 .PHONY: install
 install: whoami
 	$(call oc_promote,$(PROJECT_PREFIX)metabase)
+
+.PHONY: install_test
+install_test: OC_PROJECT=$(OC_TEST_PROJECT)
+install_test: whoami
+	$(call oc_promote,$(PROJECT_PREFIX)metabase)
