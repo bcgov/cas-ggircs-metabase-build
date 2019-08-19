@@ -5,7 +5,7 @@ PROJECT_PREFIX := cas-ggircs-
 THIS_FILE := $(lastword $(MAKEFILE_LIST))
 include .pipeline/*.mk
 
-OC_TEMPLATE_VARS += METABASE_BRANCH=bcgov OC_PROJECT=${OC_PROJECT}
+OC_TEMPLATE_VARS += METABASE_BRANCH=bcgov
 
 .PHONY: help
 help: $(call make_help,help,Explains how to use this Makefile)
@@ -46,8 +46,11 @@ build: whoami
 .PHONY: install
 install: whoami
 	$(call oc_promote,$(PROJECT_PREFIX)metabase)
+	$(call oc_deploy)
+
 
 .PHONY: install_test
 install_test: OC_PROJECT=$(OC_TEST_PROJECT)
 install_test: whoami
-	$(call oc_promote,$(PROJECT_PREFIX)metabase)
+install_test: install
+

@@ -12,6 +12,14 @@ parameters:
   displayName: Git SHA1
   name: GIT_SHA1
   required: true
+- description: Openshift project name
+  displayName: Project
+  name: OC_PROJECT
+  required: true
+- description: Openshift registry URL
+  displayName: Registry
+  name: OC_REGISTRY
+  required: true
 
 objects:
 - apiVersion: v1
@@ -56,9 +64,9 @@ objects:
             value: ${PREFIX}metabase-postgres
           - name: JAVA_TIMEZONE
             value: US/Pacific
-          image: ${PREFIX}metabase
+          image: ${OC_REGISTRY}/${OC_PROJECT}/${PREFIX}metabase:${GIT_SHA1}
           imagePullPolicy: IfNotPresent
-          name: ${PREFIX}metabase:${GIT_SHA1}
+          name: ${PREFIX}metabase
           ports:
           - containerPort: 3000
             protocol: TCP

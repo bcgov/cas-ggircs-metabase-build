@@ -4,8 +4,8 @@ labels:
   template: deploy-template
 
 parameters:
-- description: Version of PostgreSQL image to be used (10 for now).
-  displayName: Version of PostgreSQL Image
+- description: Openshift project name.
+  displayName: Project
   name: OC_PROJECT
   required: true
 - description: Prefix to prepend to object name.
