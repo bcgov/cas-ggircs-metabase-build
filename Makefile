@@ -46,8 +46,9 @@ build: whoami
 .PHONY: install
 install: whoami
 	$(call oc_promote,$(PROJECT_PREFIX)metabase)
+	$(call oc_wait_for_deploy_ready,$(PROJECT_PREFIX)postgres-metabase)
 	$(call oc_deploy)
-
+	$(call oc_wait_for_deploy_ready,$(PROJECT_PREFIX)metabase)
 
 .PHONY: install_test
 install_test: OC_PROJECT=$(OC_TEST_PROJECT)
