@@ -38,8 +38,9 @@ objects:
         memory: 256Mi
     source:
       git:
-        ref: bcgov
-        uri: https://github.com/bcgov/${PREFIX}metabase.git
+        ref: ${GIT_SHA1}
+        uri: https://github.com/bcgov/${PREFIX}metabase-build.git
+      contextDir: metabase
       type: Git
     strategy:
       sourceStrategy:
