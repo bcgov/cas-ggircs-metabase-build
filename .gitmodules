@@ -1,6 +1,7 @@
 [submodule ".pipeline"]
 	path = .pipeline
 	url = https://github.com/bcgov/cas-pipeline.git
+	branch = feature/cas-postgres
 [submodule "metabase"]
 	path = metabase
 	url = https://github.com/bcgov/cas-ggircs-metabase.git

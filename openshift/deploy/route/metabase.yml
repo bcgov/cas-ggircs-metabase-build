@@ -4,38 +4,37 @@ labels:
   template: deploy-template
 
 parameters:
-- description: Openshift project name.
-  displayName: Project
-  name: OC_PROJECT
-  required: true
-- description: Prefix to prepend to object name.
-  displayName: Prefix
-  name: PREFIX
-  required: true
+  - description: Openshift project name.
+    displayName: Project
+    name: OC_PROJECT
+    required: true
+  - description: Prefix to prepend to object name.
+    displayName: Prefix
+    name: PREFIX
+    required: true
 
 objects:
-- apiVersion: route.openshift.io/v1
-  kind: Route
-  metadata:
-    name: ${PREFIX}metabase
-  spec:
-    host: metabase-${OC_PROJECT}.pathfinder.gov.bc.ca
-    port:
-      targetPort: ${PREFIX}metabase
-    tls:
-      termination: edge
-    to:
-      kind: Service
+  - apiVersion: route.openshift.io/v1
+    kind: Route
+    metadata:
       name: ${PREFIX}metabase
-      weight: 100
-    wildcardPolicy: None
-  status:
-    ingress:
-    - conditions:
-      - status: 'True'
-        type: Admitted
-      host: metabase-${OC_PROJECT}.pathfinder.gov.bc.ca
-      routerName: router
+    spec:
+      host: cas-metabase.pathfinder.gov.bc.ca
+      port:
+        targetPort: ${PREFIX}metabase
+      tls:
+        termination: edge
+        insecureEdgeTerminationPolicy: Redirect
+      to:
+        kind: Service
+        name: ${PREFIX}metabase
+        weight: 100
       wildcardPolicy: None
-
-
+    status:
+      ingress:
+        - conditions:
+            - status: "True"
+              type: Admitted
+          host: metabase-${OC_PROJECT}.pathfinder.gov.bc.ca
+          routerName: router
+          wildcardPolicy: None
