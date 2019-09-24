@@ -43,15 +43,41 @@ build: whoami
 	$(call oc_build,$(PROJECT_PREFIX)metabase-build)
 	$(call oc_build,$(PROJECT_PREFIX)metabase)
 
+.PHONY: create_postgres_user
+create_postgres_user:
+	$(call oc_exec_all_pods,cas-postgres-master,create-user-db metabase metabase)
+	$(call oc_exec_all_pods,cas-postgres-workers,create-citus-in-db metabase)
+
+.PHONY: create_postgres_user_dev
+create_postgres_user_dev: OC_PROJECT=$(OC_DEV_PROJECT)
+create_postgres_user_dev: create_postgres_user
+
+.PHONY: create_postgres_user_test
+create_postgres_user_test: OC_PROJECT=$(OC_TEST_PROJECT)
+create_postgres_user_test: create_postgres_user
+
+.PHONY: create_postgres_user_prod
+create_postgres_user_prod: OC_PROJECT=$(OC_PROD_PROJECT)
+create_postgres_user_prod: create_postgres_user
+
+OC_TEMPLATE_VARS += METABASE_PASSWORD="$(shell echo -n "$(METABASE_PASSWORD)" | base64)" METABASE_USER="$(shell echo -n "metabase" | base64)" METABASE_DB="$(shell echo -n "metabase" | base64)"
+
 .PHONY: install
 install: whoami
+	$(if $(METABASE_PASSWORD), $(call oc_create_secrets))
 	$(call oc_promote,$(PROJECT_PREFIX)metabase)
-	$(call oc_wait_for_deploy_ready,$(PROJECT_PREFIX)metabase-postgres)
+	$(call oc_wait_for_deploy_ready,cas-postgres-master)
 	$(call oc_deploy)
 	$(call oc_wait_for_deploy_ready,$(PROJECT_PREFIX)metabase)
 
+.PHONY: install_dev
+install_dev: OC_PROJECT=$(OC_DEV_PROJECT)
+install_dev: install
+
 .PHONY: install_test
 install_test: OC_PROJECT=$(OC_TEST_PROJECT)
-install_test: whoami
 install_test: install
 
+.PHONY: install_prod
+install_prod: OC_PROJECT=$(OC_PROD_PROJECT)
+install_prod: install
