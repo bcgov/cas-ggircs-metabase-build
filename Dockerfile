@@ -17,4 +17,6 @@ ENV JAVA_OPTS=$JAVA_OPTS
 
 COPY metabase.jar .
 RUN echo "#!/usr/bin/env bash\njava -jar -Xms$JAVA_XMS -Xmx$JAVA_XMX $JAVA_OPTS metabase.jar" > ./entrypoint.sh
+RUN chmod +x ./entrypoint.sh
+
 ENTRYPOINT ["./entrypoint.sh"]
