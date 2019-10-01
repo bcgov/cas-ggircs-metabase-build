@@ -2,53 +2,57 @@ apiVersion: template.openshift.io/v1
 kind: Template
 
 parameters:
-- description: Prefix to prepend to object name.
-  displayName: Prefix
-  name: PREFIX
-  required: true
-- description: Normalized name of git branch to be deployed.
-  displayName: Git branch (normalized)
-  name: GIT_BRANCH_NORM
-  required: true
-- description: SHA1 of git revision to be deployed.
-  displayName: Git SHA1
-  name: GIT_SHA1
-  required: true
+  - description: Prefix to prepend to object name.
+    displayName: Prefix
+    name: PREFIX
+    required: true
+  - description: Normalized name of git branch to be deployed.
+    displayName: Git branch (normalized)
+    name: GIT_BRANCH_NORM
+    required: true
+  - description: SHA1 of git revision to be deployed.
+    displayName: Git SHA1
+    name: GIT_SHA1
+    required: true
+  - description: Whether incremental builds should be used
+    displayName: Use incremental build
+    name: INCREMENTAL_BUILD
+    required: true
 
 objects:
-- apiVersion: build.openshift.io/v1
-  kind: BuildConfig
-  metadata:
-    name: ${PREFIX}metabase-build
-  spec:
-    runPolicy: Parallel
-    nodeSelector:
+  - apiVersion: build.openshift.io/v1
+    kind: BuildConfig
+    metadata:
+      name: ${PREFIX}metabase-build
+    spec:
+      runPolicy: Parallel
+      nodeSelector:
         beta.kubernetes.io/os: linux
-    output:
-      to:
-        kind: ImageStreamTag
-        name: ${PREFIX}metabase-build:${GIT_BRANCH_NORM}
-        # The tag of the image stream is the branch instead of the sha1, to allow incremental builds
-    resources:
-      limits:
-        cpu: 1000m
-        memory: 4Gi
-      requests:
-        cpu: 100m
-        memory: 256Mi
-    source:
-      git:
-        ref: ${GIT_SHA1}
-        uri: https://github.com/bcgov/${PREFIX}metabase-build.git
-      contextDir: metabase
-      type: Git
-    strategy:
-      sourceStrategy:
-        from:
+      output:
+        to:
           kind: ImageStreamTag
-          name: ${PREFIX}metabase-builder:master
-        incremental: true
-      type: Source
-    triggers: []
-  status:
-    lastVersion: 0
+          name: ${PREFIX}metabase-build:${GIT_BRANCH_NORM}
+          # The tag of the image stream is the branch instead of the sha1, to allow incremental builds
+      resources:
+        limits:
+          cpu: 1000m
+          memory: 4Gi
+        requests:
+          cpu: 100m
+          memory: 256Mi
+      source:
+        git:
+          ref: ${GIT_SHA1}
+          uri: https://github.com/bcgov/${PREFIX}metabase-build.git
+        contextDir: metabase
+        type: Git
+      strategy:
+        sourceStrategy:
+          from:
+            kind: ImageStreamTag
+            name: ${PREFIX}metabase-builder:master
+          incremental: ${{INCREMENTAL_BUILD}}
+        type: Source
+      triggers: []
+    status:
+      lastVersion: 0

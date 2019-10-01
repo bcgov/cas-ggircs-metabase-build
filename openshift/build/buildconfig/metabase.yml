@@ -2,51 +2,49 @@ apiVersion: template.openshift.io/v1
 kind: Template
 
 parameters:
-- description: Prefix to prepend to object name.
-  displayName: Prefix
-  name: PREFIX
-  required: true
-- description: SHA1 of git revision to be deployed.
-  displayName: Git SHA1
-  name: GIT_SHA1
-  required: true
+  - description: Prefix to prepend to object name.
+    displayName: Prefix
+    name: PREFIX
+    required: true
+  - description: SHA1 of git revision to be deployed.
+    displayName: Git SHA1
+    name: GIT_SHA1
+    required: true
 
 objects:
-- apiVersion: build.openshift.io/v1
-  kind: BuildConfig
-  metadata:
-    name: ${PREFIX}metabase
-  spec:
-    runPolicy: Parallel
-    nodeSelector:
+  - apiVersion: build.openshift.io/v1
+    kind: BuildConfig
+    metadata:
+      name: ${PREFIX}metabase
+    spec:
+      runPolicy: Parallel
+      nodeSelector:
         beta.kubernetes.io/os: linux
-    output:
-      to:
-        kind: ImageStreamTag
-        name: ${PREFIX}metabase:${GIT_SHA1}
-    resources:
-      limits:
-        cpu: 1000m
-        memory: 8Gi
-      requests:
-        cpu: 100m
-        memory: 256Mi
-    source:
-      git:
-        ref: ${GIT_SHA1}
-        uri: https://github.com/bcgov/${PREFIX}metabase-build.git
-      type: Git
-      images:
-      - from:
+      output:
+        to:
           kind: ImageStreamTag
-          name: ${PREFIX}metabase-build:${GIT_SHA1}
-        paths:
-        - destinationDir: .
-          sourcePath: /opt/app-root/src/src/target/uberjar/metabase.jar
-    strategy:
-      type: Docker
-    triggers: []
-  status:
-    lastVersion: 0
-
-
+          name: ${PREFIX}metabase:${GIT_SHA1}
+      resources:
+        limits:
+          cpu: 1000m
+          memory: 4Gi
+        requests:
+          cpu: 100m
+          memory: 2Gi
+      source:
+        git:
+          ref: ${GIT_SHA1}
+          uri: https://github.com/bcgov/${PREFIX}metabase-build.git
+        type: Git
+        images:
+          - from:
+              kind: ImageStreamTag
+              name: ${PREFIX}metabase-build:${GIT_SHA1}
+            paths:
+              - destinationDir: .
+                sourcePath: /opt/app-root/src/src/target/uberjar/metabase.jar
+      strategy:
+        type: Docker
+      triggers: []
+    status:
+      lastVersion: 0
