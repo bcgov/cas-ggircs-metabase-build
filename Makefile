@@ -53,6 +53,7 @@ install: whoami
 $(OC) -n "$(OC_PROJECT)" get secret/$(PREFIX)metabase-postgres -o go-template='{{index .data "database-password"}}' | base64 -d; else \
 openssl rand -base64 32 | tr -d /=+ | cut -c -16; fi))
 	$(eval OC_TEMPLATE_VARS += METABASE_PASSWORD="$(shell echo -n "$(METABASE_PASSWORD)" | base64)" METABASE_USER="$(shell echo -n "$(METABASE_USER)" | base64)" METABASE_DB="$(shell echo -n "$(METABASE_DB)" | base64)")
+	$(eval OC_TEMPLATE_VARS += ROUTE_SUFFIX=$(ROUTE_SUFFIX))
 	$(call oc_create_secrets)
 	$(call oc_exec_all_pods,cas-postgres-master,create-user-db $(METABASE_USER) $(METABASE_DB) $(METABASE_PASSWORD))
 	$(call oc_exec_all_pods,cas-postgres-workers,create-citus-in-db $(METABASE_DB))
@@ -63,10 +64,12 @@ openssl rand -base64 32 | tr -d /=+ | cut -c -16; fi))
 
 .PHONY: install_dev
 install_dev: OC_PROJECT=$(OC_DEV_PROJECT)
+install_dev: ROUTE_SUFFIX="-dev"
 install_dev: install
 
 .PHONY: install_test
 install_test: OC_PROJECT=$(OC_TEST_PROJECT)
+install_test: ROUTE_SUFFIX="-test"
 install_test: install
 
 .PHONY: install_prod

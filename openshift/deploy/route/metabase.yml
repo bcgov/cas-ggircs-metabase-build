@@ -12,6 +12,10 @@ parameters:
     displayName: Prefix
     name: PREFIX
     required: true
+  - description: Suffix to append to the route host
+    displayName: Route Suffix
+    name: ROUTE_SUFFIX
+    required: false
 
 objects:
   - apiVersion: route.openshift.io/v1
@@ -19,7 +23,7 @@ objects:
     metadata:
       name: ${PREFIX}metabase
     spec:
-      host: cas-metabase.pathfinder.gov.bc.ca
+      host: cas-metabase${ROUTE_SUFFIX}.pathfinder.gov.bc.ca
       port:
         targetPort: ${PREFIX}metabase
       tls:
