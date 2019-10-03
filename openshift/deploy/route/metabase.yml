@@ -39,6 +39,6 @@ objects:
         - conditions:
             - status: "True"
               type: Admitted
-          host: metabase-${OC_PROJECT}.pathfinder.gov.bc.ca
+          host: cas-metabase${ROUTE_SUFFIX}.pathfinder.gov.bc.ca
           routerName: router
           wildcardPolicy: None
